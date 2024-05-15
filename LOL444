@@ -1,0 +1,72 @@
+-- Variable de control para detener el bucle principal
+local isScriptRunning = true
+
+-- Función para cambiar el estado del script
+local function toggleScript()
+    isScriptRunning = not isScriptRunning
+    if isScriptRunning then
+        -- Si el script está corriendo, imprime un mensaje y comienza el bucle principal
+        print("Script started")
+        while isScriptRunning do
+            local prayObject = nil
+            
+            -- Buscar objetos "Pray" en el workspace
+            for _, object in pairs(workspace:GetChildren()) do
+                if object.Name == "Pray" then
+                    prayObject = object
+                    break
+                end
+            end
+            
+            if prayObject then
+                -- Activar los "proximity prompts" para el objeto "Pray"
+                for _, descendant in ipairs(prayObject:GetDescendants()) do
+                    if descendant:IsA("ProximityPrompt") then
+                        fireproximityprompt(descendant)
+                        wait(0.1)  -- Cooldown de 0.1 segundos entre cada activación
+                    end
+                end
+                
+                -- Mover el personaje del jugador hacia el objeto "Pray"
+                game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(prayObject.Position))
+                
+                -- Esperar 0.5 segundos antes de verificar de nuevo
+                wait(0.5)
+            else
+                -- Si no se encuentra ningún objeto "Pray", esperar y volver a verificar
+                print("No se encontraron objetos 'Pray' en el workspace. Revisando de nuevo...")
+                wait(1)
+            end
+        end
+    else
+        -- Si el script no está corriendo, imprime un mensaje
+        print("Script stopped")
+    end
+end
+
+-- Crear la GUI del botón
+local ScreenGui = Instance.new("ScreenGui")
+local button = Instance.new("TextButton")
+
+ScreenGui.Parent = game.CoreGui
+button.Parent = ScreenGui
+button.Text = "Toggle Script"
+button.Size = UDim2.new(0, 150, 0, 50)
+button.Position = UDim2.new(0.20, -75, 0.20, -71) -- Posición inicial
+
+-- Función para mover el botón con el mouse
+local function moveButton()
+    local mouse = game.Players.LocalPlayer:GetMouse()
+    local guiPos = UDim2.new(0, mouse.X, 0, mouse.Y)
+    button.Position = guiPos - UDim2.new(0, button.AbsoluteSize.X / 2, 0, button.AbsoluteSize.Y / 2)
+end
+
+-- Conectar la función moveButton al evento Mouse.Move
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        moveButton()
+    end
+end)
+
+-- Conectar la función toggleScript al evento MouseButton1Click del botón
+button.MouseButton1Click:Connect(toggleScript)
