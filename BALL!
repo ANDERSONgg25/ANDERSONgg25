@@ -1,0 +1,78 @@
+-- Crear la GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+screenGui.ResetOnSpawn = false
+
+local frame = Instance.new("Frame")
+frame.Parent = screenGui
+frame.Name = "MainFrame"
+frame.Size = UDim2.new(0.5, 0, 0.5, 0) -- Tamaño inicial de la GUI (la mitad de la pantalla)
+frame.Position = UDim2.new(0.25, 0, 0.25, 0) -- Posición inicial centrada
+frame.BackgroundTransparency = 0.5 -- Transparencia del fondo para que sea semi-transparente
+frame.BackgroundColor3 = Color3.new(0, 0, 0) -- Color del fondo
+frame.BorderSizePixel = 0 -- Sin borde
+frame.Active = true -- Hacer la GUI interactiva
+
+-- Crear el botón
+local button = Instance.new("TextButton")
+button.Parent = frame
+button.Name = "ToggleButton"
+button.Text = "Activar"
+button.Size = UDim2.new(1, 0, 0.2, 0) -- Tamaño del botón (el 20% de la altura del frame)
+button.Position = UDim2.new(0, 0, 0.75, 0) -- Posición del botón alineada en la parte inferior
+button.BackgroundColor3 = Color3.new(1, 1, 1) -- Color de fondo del botón
+button.BorderSizePixel = 0 -- Sin borde
+
+-- Variables de control
+local isCollecting = false
+
+-- Función para activar/desactivar el bucle
+local function toggleCollecting()
+    isCollecting = not isCollecting
+    if isCollecting then
+        button.Text = "Desactivar"
+    else
+        button.Text = "Activar"
+    end
+end
+
+-- Conectar la función al botón
+button.MouseButton1Click:Connect(toggleCollecting)
+
+-- Hacer que la GUI sea movible con el mouse
+local dragging = false
+local dragStart, startPos, dragInput
+
+frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = frame.Position
+    end
+end)
+
+frame.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+        local delta = input.Position - dragStart
+        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+frame.InputEnded:Connect(function(input)
+    if input == dragInput then
+        dragging = false
+    end
+end)
+
+-- Bucle para enviar el evento al servidor lo más rápido posible
+spawn(function()
+    while true do
+        if isCollecting then
+            local replicatedStorage = game:GetService("ReplicatedStorage")
+            local remote = replicatedStorage:WaitForChild("Remotes"):WaitForChild("Collect")
+            remote:FireServer(6.363010406494141)
+        end
+        task.wait() -- Pequeña pausa para evitar uso excesivo de recursos
+    end
+end)
