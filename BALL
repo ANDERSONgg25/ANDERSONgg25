@@ -1,8 +1,4 @@
--- Variables
-local replicatedStorage = game:GetService("ReplicatedStorage")
-local remote = replicatedStorage:WaitForChild("Remotes"):WaitForChild("Collect")
-
--- Referencias a la GUI
+-- Crear la GUI
 local screenGui = Instance.new("ScreenGui")
 screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 screenGui.ResetOnSpawn = false
@@ -17,52 +13,31 @@ frame.BackgroundColor3 = Color3.new(0, 0, 0) -- Color del fondo
 frame.BorderSizePixel = 0 -- Sin borde
 frame.Active = true -- Hacer la GUI interactiva
 
-local toggleButton = Instance.new("TextButton")
-toggleButton.Parent = frame
-toggleButton.Name = "ToggleButton"
-toggleButton.Text = "Activar"
-toggleButton.Size = UDim2.new(1, 0, 0.2, 0) -- Tamaño del botón (el 20% de la altura del frame)
-toggleButton.Position = UDim2.new(0, 0, 0.75, 0) -- Posición del botón alineada en la parte inferior
-toggleButton.BackgroundColor3 = Color3.new(1, 1, 1) -- Color de fondo del botón
-toggleButton.BorderSizePixel = 0 -- Sin borde
-
-local hideButton = Instance.new("TextButton")
-hideButton.Parent = screenGui
-hideButton.Name = "HideButton"
-hideButton.Text = ""
-hideButton.Size = UDim2.new(0.1, 0, 0.1, 0) -- Tamaño del botón ocultar (el 10% de la pantalla)
-hideButton.Position = UDim2.new(0.9, 0, 0, 0) -- Posición del botón en la esquina superior derecha
-hideButton.BackgroundColor3 = Color3.new(1, 0, 0)
-hideButton.BackgroundTransparency = 0.5
-hideButton.BorderSizePixel = 0
-
-local uiCorner = Instance.new("UICorner")
-uiCorner.Parent = hideButton
-uiCorner.CornerRadius = UDim.new(1, 0)
+-- Crear el botón
+local button = Instance.new("TextButton")
+button.Parent = frame
+button.Name = "ToggleButton"
+button.Text = "Activar"
+button.Size = UDim2.new(1, 0, 0.2, 0) -- Tamaño del botón (el 20% de la altura del frame)
+button.Position = UDim2.new(0, 0, 0.75, 0) -- Posición del botón alineada en la parte inferior
+button.BackgroundColor3 = Color3.new(1, 1, 1) -- Color de fondo del botón
+button.BorderSizePixel = 0 -- Sin borde
 
 -- Variables de control
 local isCollecting = false
-local isFrameVisible = true
 
 -- Función para activar/desactivar el bucle
 local function toggleCollecting()
     isCollecting = not isCollecting
     if isCollecting then
-        toggleButton.Text = "Desactivar"
+        button.Text = "Desactivar"
     else
-        toggleButton.Text = "Activar"
+        button.Text = "Activar"
     end
 end
 
--- Función para mostrar/ocultar el Frame
-local function toggleFrameVisibility()
-    isFrameVisible = not isFrameVisible
-    frame.Visible = isFrameVisible
-end
-
 -- Conectar la función al botón
-toggleButton.MouseButton1Click:Connect(toggleCollecting)
-hideButton.MouseButton1Click:Connect(toggleFrameVisibility)
+button.MouseButton1Click:Connect(toggleCollecting)
 
 -- Hacer que la GUI sea movible con el mouse
 local dragging = false
@@ -90,20 +65,14 @@ frame.InputEnded:Connect(function(input)
     end
 end)
 
--- Seleccionar la imagen específica por ID
-local imageId = 10919793581
-local selectedImage = Instance.new("ImageLabel")
-selectedImage.Parent = hideButton
-selectedImage.Size = UDim2.new(1, 0, 1, 0)
-selectedImage.Position = UDim2.new(0.5, 0, 0.5, 0) -- Alinear la imagen en el centro de la bola
-selectedImage.AnchorPoint = Vector2.new(0.5, 0.5) -- Centrar la imagen
-selectedImage.Image = "rbxassetid://" .. imageId
-selectedImage.BackgroundTransparency = 1
-
--- Bucle para enviar el evento al servidor repetidamente
-while true do
-    wait()
-    if isCollecting then
-        remote:FireServer(6.363010406494141)
+-- Bucle para enviar el evento al servidor lo más rápido posible
+spawn(function()
+    while true do
+        if isCollecting then
+            local replicatedStorage = game:GetService("ReplicatedStorage")
+            local remote = replicatedStorage:WaitForChild("Remotes"):WaitForChild("Collect")
+            remote:FireServer(6.363010406494141)
+        end
+        task.wait() -- Pequeña pausa para evitar uso excesivo de recursos
     end
-end
+end)
