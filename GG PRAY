@@ -67,20 +67,6 @@ local function collectItems()
     end
 end
 
--- Función para cambiar el estado de collectGwaGwa
-local function toggleCollectGwaGwa()
-    Settings.collectGwaGwa = not Settings.collectGwaGwa
-    print("Recolección automática de GwaGwa " .. (Settings.collectGwaGwa and "habilitada" or "deshabilitada"))
-    sendNotification("Hades RNG", "Recolección automática de GwaGwa " .. (Settings.collectGwaGwa and "habilitada" or "deshabilitada"), "")
-end
-
--- Función para cambiar el estado de collectPray
-local function toggleCollectPray()
-    Settings.collectPray = not Settings.collectPray
-    print("Recolección automática de Pray " .. (Settings.collectPray and "habilitada" or "deshabilitada"))
-    sendNotification("Hades RNG", "Recolección automática de Pray " .. (Settings.collectPray and "habilitada" or "deshabilitada"), "")
-end
-
 -- Bucle principal del script
 while true do
     if Settings.scriptEnabled then
