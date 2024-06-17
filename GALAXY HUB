@@ -6,7 +6,7 @@ local StarterGui = game:GetService("StarterGui")
 
 -- Configuración del script (configuración inicial)
 getgenv().Settings = {
-    scriptEnabled = true,
+    scriptEnabled = false,
     collectGwaGwa = true,  -- Configuración para recolectar GwaGwa automáticamente
     collectPray = true,    -- Configuración para recolectar Pray automáticamente
     collectItemsEnabled = true,
