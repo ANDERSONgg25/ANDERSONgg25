@@ -1,18 +1,10 @@
 -- Inicialización del script
 local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 local StarterGui = game:GetService("StarterGui")
 
--- Configuración del script (configuración inicial)
-getgenv().Settings = {
-    scriptEnabled = true,
-    collectGwaGwa = true,  -- Configuración para recolectar GwaGwa automáticamente
-    collectPray = true,    -- Configuración para recolectar Pray automáticamente
-    collectItemsEnabled = true,
-    teleportCooldown = 5,
-    proximityPromptDelay = 0.1
-}
+-- Usar configuraciones globales
+local Settings = getgenv().Settings
 
 -- Función para enviar notificaciones al jugador
 local function sendNotification(title, text, icon)
@@ -26,12 +18,12 @@ end
 
 -- Función para buscar y activar Proximity Prompts
 local function activateProximityPrompts()
-    if getgenv().Settings.scriptEnabled then
+    if Settings.scriptEnabled then
         for _, descendant in ipairs(Workspace:GetDescendants()) do
             if descendant:IsA("ProximityPrompt") then
                 local success, errorMsg = pcall(function()
                     fireproximityprompt(descendant)
-                    wait(getgenv().Settings.proximityPromptDelay)
+                    wait(Settings.proximityPromptDelay)
                 end)
                 if success then
                     print("Activado Proximity Prompt en:", descendant.Name)
@@ -45,10 +37,10 @@ end
 
 -- Función para teletransportar al jugador a objetos específicos
 local function teleportToObjects()
-    if getgenv().Settings.scriptEnabled then
+    if Settings.scriptEnabled then
         local objects = Workspace:GetChildren()
         for _, object in pairs(objects) do
-            if (getgenv().Settings.collectGwaGwa and object.Name == "GwaGwa") or (getgenv().Settings.collectPray and object.Name == "Pray") then
+            if (Settings.collectGwaGwa and object.Name == "GwaGwa") or (Settings.collectPray and object.Name == "Pray") then
                 local teleportDestination = object.Position
                 Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(teleportDestination))
                 sendNotification("Hades RNG", "Teletransportado a " .. object.Name, "")
@@ -64,7 +56,7 @@ end
 
 -- Función para recoger ítems automáticamente
 local function collectItems()
-    if getgenv().Settings.scriptEnabled and getgenv().Settings.collectItemsEnabled then
+    if Settings.scriptEnabled and Settings.collectItemsEnabled then
         for _, item in ipairs(Workspace:GetDescendants()) do
             if item:IsA("Tool") and item.Parent == Workspace then
                 Players.LocalPlayer.Character.Humanoid:EquipTool(item)
@@ -75,28 +67,11 @@ local function collectItems()
     end
 end
 
--- Función para cambiar el estado de collectGwaGwa
-local function toggleCollectGwaGwa()
-    getgenv().Settings.collectGwaGwa = not getgenv().Settings.collectGwaGwa
-    print("Recolección automática de GwaGwa " .. (getgenv().Settings.collectGwaGwa and "habilitada" or "deshabilitada"))
-    sendNotification("Hades RNG", "Recolección automática de GwaGwa " .. (getgenv().Settings.collectGwaGwa and "habilitada" or "deshabilitada"), "")
-end
-
--- Función para cambiar el estado de collectPray
-local function toggleCollectPray()
-    getgenv().Settings.collectPray = not getgenv().Settings.collectPray
-    print("Recolección automática de Pray " .. (getgenv().Settings.collectPray and "habilitada" or "deshabilitada"))
-    sendNotification("Hades RNG", "Recolección automática de Pray " .. (getgenv().Settings.collectPray and "habilitada" or "deshabilitada"), "")
-end
-
 -- Bucle principal del script
 while true do
-    if getgenv().Settings.scriptEnabled then
+    if Settings.scriptEnabled then
         teleportToObjects()
         collectItems()
     end
-    wait(getgenv().Settings.teleportCooldown)
+    wait(Settings.teleportCooldown)
 end
-
--- Ejemplo de uso de getgenv para almacenar configuraciones globales
-getgenv().Settings = Settings
