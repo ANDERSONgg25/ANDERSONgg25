@@ -10,7 +10,7 @@ getgenv().Settings = {
     collectGwaGwa = true,  -- Configuración para recolectar GwaGwa automáticamente
     collectPray = true,    -- Configuración para recolectar Pray automáticamente
     collectItemsEnabled = true,
-    teleportCooldown = 1,
+    teleportCooldown = 0.5,
     proximityPromptDelay = 0.1
 }
 
