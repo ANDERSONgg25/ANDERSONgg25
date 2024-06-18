@@ -3,6 +3,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 local StarterGui = game:GetService("StarterGui")
+local TweenService = game:GetService("TweenService")
 
 -- Configuración del script (configuración inicial)
 getgenv().Settings = {
@@ -10,8 +11,9 @@ getgenv().Settings = {
     collectGwaGwa = true,  -- Configuración para recolectar GwaGwa automáticamente
     collectPray = true,    -- Configuración para recolectar Pray automáticamente
     collectItemsEnabled = true,
-    teleportCooldown = 0.5,
-    proximityPromptDelay = 0.1
+    teleportCooldown = 0000000000000000000000000000.1,
+    proximityPromptDelay = 0.1,
+    teleportDuration = 000000000000000000000000000000000000000.1, -- Duración del teletransporte
 }
 
 -- Función para buscar y activar Proximity Prompts
@@ -39,9 +41,15 @@ local function teleportToObjects()
         for _, object in pairs(objects) do
             if (getgenv().Settings.collectGwaGwa and object.Name == "GwaGwa") or (getgenv().Settings.collectPray and object.Name == "Pray") then
                 local teleportDestination = object.Position
-                Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(teleportDestination))
-                activateProximityPrompts()
-                return
+                local character = Players.LocalPlayer.Character
+                local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                if humanoidRootPart then
+                    local tweenInfo = TweenInfo.new(getgenv().Settings.teleportDuration, Enum.EasingStyle.Linear, Enum.EasingDirection.In)
+                    local tween = TweenService:Create(humanoidRootPart, tweenInfo, {CFrame = CFrame.new(teleportDestination)})
+                    tween:Play()
+                    activateProximityPrompts()
+                    return
+                end
             end
         end
     end
