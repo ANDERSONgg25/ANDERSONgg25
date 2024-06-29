@@ -1,0 +1,50 @@
+_G.Ignore = {}
+_G.Settings = {
+    Players = {
+        ["Ignore Me"] = false,
+        ["Ignore Others"] = false,
+        ["Ignore Tools"] = false
+    },
+    Meshes = {
+        NoMesh = true,
+        NoTexture = true,
+        Destroy = true
+    },
+    Images = {
+        Invisible = true,
+        Destroy = true
+    },
+    Explosions = {
+        Smaller = true,
+        Invisible = true, -- Not for PVP games
+        Destroy = true -- Not for PVP games
+    },
+    Particles = {
+        Invisible = true,
+        Destroy = false
+    },
+    TextLabels = {
+        LowerQuality = true,
+        Invisible = true,
+        Destroy = false
+    },
+    MeshParts = {
+        LowerQuality = true,
+        Invisible = true,
+        NoTexture = true,
+        NoMesh = true,
+        Destroy = false
+    },
+    Other = {
+        ["FPS Cap"] = 240, -- true to uncap
+        ["No Camera Effects"] = true,
+        ["No Clothes"] = true,
+        ["Low Water Graphics"] = true,
+        ["No Shadows"] = true,
+        ["Low Rendering"] = true,   
+        ["Low Quality Parts"] = true,
+        ["Low Quality Models"] = true,
+        ["Reset Materials"] = true,
+    }
+}
+loadstring(game:HttpGet("https://raw.githubusercontent.com/CasperFlyModz/discord.gg-rips/main/FPSBooster.lua"))()
