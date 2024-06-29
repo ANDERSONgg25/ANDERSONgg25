@@ -1,0 +1,123 @@
+-- Función para eliminar todos los emisores de partículas
+local function removeParticles()
+    local removedCount = 0
+    local totalChecked = 0
+
+    -- Función para verificar y eliminar emisores de partículas en una instancia dada
+    local function checkInstance(instance)
+        for _, child in pairs(instance:GetChildren()) do
+            totalChecked = totalChecked + 1
+            if child:IsA("ParticleEmitter") or
+               child:IsA("Trail") or
+               child:IsA("Beam") or
+               child:IsA("Fire") or
+               child:IsA("Smoke") or
+               child:IsA("Sparkles") then
+                child:Destroy()
+                removedCount = removedCount + 1
+            end
+            checkInstance(child)  -- Verificar recursivamente todos los hijos
+        end
+    end
+
+    -- Verificar todos los descendientes del workspace del juego
+    checkInstance(game.Workspace)
+end
+
+-- Función para iniciar el bucle de eliminación de partículas con espera de 6 segundos
+local function startParticleRemoval()
+    while true do
+        removeParticles()
+        wait(6)  -- Esperar 6 segundos antes de la próxima ejecución
+    end
+end
+
+-- Iniciar el proceso de eliminación de partículas en un hilo aparte
+coroutine.wrap(startParticleRemoval)()
+
+-- Configuración del script principal para recolección y teletransporte
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local TweenService = game:GetService("TweenService")
+
+-- Configuración del script (configuración inicial)
+getgenv().Settings = {
+    scriptEnabled = true,
+    collectGwaGwa = true,  -- Configuración para recolectar GwaGwa automáticamente
+    collectPray = true,    -- Configuración para recolectar Pray automáticamente
+    collectItemsEnabled = true,
+    teleportCooldown = 0.1,  -- Tiempo de espera entre teletransportes
+    proximityPromptDelay = 0.1,
+    teleportDuration = 0.1, -- Duración del teletransporte
+}
+
+-- Función para buscar y activar Proximity Prompts
+local function activateProximityPrompts()
+    if getgenv().Settings.scriptEnabled then
+        for _, descendant in ipairs(Workspace:GetDescendants()) do
+            if descendant:IsA("ProximityPrompt") then
+                local success, errorMsg = pcall(function()
+                    fireproximityprompt(descendant)
+                    wait(getgenv().Settings.proximityPromptDelay)
+                end)
+                if not success then
+                    warn("Error al activar Proximity Prompt:", errorMsg)
+                end
+            end
+        end
+    end
+end
+
+-- Función para teletransportar al jugador a objetos específicos
+local function teleportToObjects()
+    if getgenv().Settings.scriptEnabled then
+        local objects = Workspace:GetChildren()
+        for _, object in pairs(objects) do
+            if (getgenv().Settings.collectGwaGwa and object.Name == "GwaGwa") or (getgenv().Settings.collectPray and object.Name == "Pray") then
+                local teleportDestination = object.Position
+                local character = Players.LocalPlayer.Character
+                local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                if humanoidRootPart then
+                    local tweenInfo = TweenInfo.new(getgenv().Settings.teleportDuration, Enum.EasingStyle.Linear, Enum.EasingDirection.In)
+                    local tween = TweenService:Create(humanoidRootPart, tweenInfo, {CFrame = CFrame.new(teleportDestination)})
+                    tween:Play()
+                    activateProximityPrompts()
+                    return
+                end
+            end
+        end
+    end
+end
+
+-- Función para recoger ítems automáticamente
+local function collectItems()
+    if getgenv().Settings.scriptEnabled and getgenv().Settings.collectItemsEnabled then
+        for _, item in ipairs(Workspace:GetDescendants()) do
+            if item:IsA("Tool") and item.Parent == Workspace then
+                Players.LocalPlayer.Character.Humanoid:EquipTool(item)
+            end
+        end
+    end
+end
+
+-- Función para cambiar el estado de collectGwaGwa
+local function toggleCollectGwaGwa()
+    getgenv().Settings.collectGwaGwa = not getgenv().Settings.collectGwaGwa
+end
+
+-- Función para cambiar el estado de collectPray
+local function toggleCollectPray()
+    getgenv().Settings.collectPray = not getgenv().Settings.collectPray
+end
+
+-- Bucle principal del script para recolección y teletransporte
+while true do
+    if getgenv().Settings.scriptEnabled then
+        teleportToObjects()
+        collectItems()
+    end
+    wait(getgenv().Settings.teleportCooldown)
+end
+
+-- Ejemplo de uso de getgenv para almacenar configuraciones globales
+getgenv().Settings = Settings
