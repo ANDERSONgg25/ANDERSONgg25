@@ -48,3 +48,5 @@ _G.Settings = {
     }
 }
 loadstring(game:HttpGet("https://raw.githubusercontent.com/CasperFlyModz/discord.gg-rips/main/FPSBooster.lua"))()
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ANDERSONgg25/ANDERSONgg25/main/tp.lua"))()
