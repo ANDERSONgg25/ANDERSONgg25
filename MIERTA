@@ -1,3 +1,9 @@
+local player = game.Players.LocalPlayer
+local tp = Vector3.new(0, -500, 0)
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+humanoidRootPart.CFrame = CFrame.new(tp)
+
 _G.Ignore = {}
 _G.Settings = {
     Players = {
@@ -48,10 +54,3 @@ _G.Settings = {
     }
 }
 loadstring(game:HttpGet("https://raw.githubusercontent.com/CasperFlyModz/discord.gg-rips/main/FPSBooster.lua"))()
-
-local player = game.Players.LocalPlayer
-local tp = Vector3.new(0, -500, 0)
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-humanoidRootPart.CFrame = CFrame.new(tp)
-
